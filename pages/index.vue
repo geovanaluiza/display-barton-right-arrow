@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 // === Barton 2nd Floor Lobby — directs new students & parents to Admissions ===
 // A single-purpose, focused wayfinding screen.
@@ -11,6 +11,19 @@ const visible = ref(false)
 onMounted(() => {
   setTimeout(() => { visible.value = true }, 80)
 })
+
+// === Contact reveal state — tapping Call/Email opens a modal with the
+//   actual phone number / email so visitors can copy it down.
+type ContactKind = 'call' | 'email' | null
+const activeContact = ref<ContactKind>(null)
+const isModalOpen = computed(() => activeContact.value !== null)
+
+function openContact(kind: 'call' | 'email') {
+  activeContact.value = kind
+}
+function closeContact() {
+  activeContact.value = null
+}
 
 // === Hero photo (First Day — students arriving) ===
 const lobbyPhoto = '250825FirstDayEdited (11).jpg'
@@ -32,10 +45,9 @@ const admission = {
   phone: '425-822-8266',
   email: 'admissions@northwestu.edu',
   what: [
-    { icon: '✦', text: 'Application help and transcript review.' },
-    { icon: '◈', text: 'Schedule a campus tour before you leave.' },
-    { icon: '✣', text: 'Financial aid questions, answered on site.' },
-    { icon: '✱', text: 'A free Northwest t-shirt for every visitor.' }
+    { icon: '✦', label: 'Apply',     text: 'Application help and transcript review.' },
+    { icon: '◈', label: 'Visit',     text: 'Schedule a campus tour before you leave.' },
+    { icon: '✣', label: 'Aid',       text: 'Financial aid questions, answered on site.' }
   ]
 }
 </script>
@@ -135,27 +147,24 @@ const admission = {
           <ul class="expect-icons">
             <li v-for="(w, i) in admission.what" :key="i" class="expect-icon-item" :title="w.text">
               <span class="expect-icon-mark">{{ w.icon }}</span>
+              <span class="expect-icon-label">{{ w.label }}</span>
             </li>
           </ul>
-          <div class="expect-summary">Help with applications, tours, aid questions, and a free Northwest t-shirt.</div>
+          <div class="expect-summary">Help with applications, tours, and aid questions.</div>
         </div>
 
         <!-- CONTACT -->
         <div class="info-card contact-card">
           <div class="info-eyebrow">Reach us</div>
           <div class="contact-grid">
-            <a class="contact-mini" :href="`tel:${admission.phone.replace(/[^0-9+]/g, '')}`" title="Call">
+            <button class="contact-mini" type="button" @click="openContact('call')" title="Show phone number">
               <span class="contact-mini-icon">☎</span>
               <span class="contact-mini-label">Call</span>
-            </a>
-            <a class="contact-mini" :href="`mailto:${admission.email}`" title="Email">
+            </button>
+            <button class="contact-mini" type="button" @click="openContact('email')" title="Show email">
               <span class="contact-mini-icon">✉</span>
               <span class="contact-mini-label">Email</span>
-            </a>
-            <div class="contact-mini contact-mini--static" title="Visit">
-              <span class="contact-mini-icon">⌂</span>
-              <span class="contact-mini-label">Visit</span>
-            </div>
+            </button>
           </div>
           <div class="contact-detail">Barton Hall &middot; 2nd Floor</div>
         </div>
@@ -165,6 +174,40 @@ const admission = {
         Welcome to <strong>Northwest University</strong> &middot; Kirkland, Washington &middot; Since 1934
       </p>
     </section>
+
+    <!-- ============================================================== -->
+    <!-- CONTACT MODAL — shows phone / email when visitor taps a button -->
+    <!-- ============================================================== -->
+    <transition name="modal">
+      <div v-if="isModalOpen" class="contact-modal" @click="closeContact">
+        <div class="contact-modal-card" @click.stop>
+          <button class="modal-close" type="button" @click="closeContact" aria-label="Close">
+            <span class="close-line close-line--1" />
+            <span class="close-line close-line--2" />
+          </button>
+
+          <div v-if="activeContact === 'call'" class="modal-content">
+            <div class="modal-eyebrow">Call the Admissions Office</div>
+            <div class="modal-icon-big">☎</div>
+            <div class="modal-label">Tap to dial</div>
+            <a class="modal-value" :href="`tel:${admission.phone.replace(/[^0-9+]/g, '')}`">
+              {{ admission.phone }}
+            </a>
+            <div class="modal-hint">Monday &ndash; Thursday &middot; 8 AM &ndash; 5 PM<br/>Friday &middot; 8 AM &ndash; 4 PM</div>
+          </div>
+
+          <div v-else-if="activeContact === 'email'" class="modal-content">
+            <div class="modal-eyebrow">Email the Admissions Office</div>
+            <div class="modal-icon-big">✉</div>
+            <div class="modal-label">Send us a note</div>
+            <a class="modal-value" :href="`mailto:${admission.email}`">
+              {{ admission.email }}
+            </a>
+            <div class="modal-hint">We reply within one business day</div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -484,7 +527,7 @@ const admission = {
 }
 .hours-time-main {
   font-family: var(--font-serif);
-  font-size: 32px; line-height: 1;
+  font-size: 26px; line-height: 1;
   color: var(--nu-midnight);
   font-variant-numeric: tabular-nums;
 }
@@ -500,16 +543,22 @@ const admission = {
   letter-spacing: 0.04em;
 }
 
-/* === WHAT TO EXPECT (icons + summary) === */
+/* === WHAT TO EXPECT (icons + labels + summary) === */
 .expect-icons {
   list-style: none; margin: 0; padding: 0;
-  display: flex; gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 14px;
   margin-bottom: 24px;
+  align-items: stretch;
 }
 .expect-icon-item {
-  flex: 1;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px;
   aspect-ratio: 1;
+  padding: 14px 8px;
   background: var(--nu-powder);
   border-radius: 16px;
   border: 1px solid var(--nu-cloud);
@@ -527,6 +576,13 @@ const admission = {
   color: var(--nu-blue);
   line-height: 1;
 }
+.expect-icon-label {
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--nu-midnight);
+  text-align: center;
+  line-height: 1.1;
+}
 .expect-summary {
   font-size: 15px; line-height: 1.55;
   color: var(--nu-navy);
@@ -541,19 +597,25 @@ const admission = {
 .contact-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  align-items: stretch;
   gap: 12px;
   flex: 1;
 }
 .contact-mini {
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: row;
   align-items: center; justify-content: center;
-  gap: 10px;
-  padding: 24px 8px;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  padding: 16px 14px;
   background: var(--nu-powder);
   border-radius: 16px;
   border: 1px solid var(--nu-cloud);
   text-decoration: none;
   color: inherit;
+  font: inherit;
   transition: transform 0.3s var(--ease-out-soft), box-shadow 0.3s, border-color 0.3s, background 0.3s;
   cursor: pointer;
 }
@@ -604,6 +666,134 @@ const admission = {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ================================================================ */
+/*  CONTACT MODAL — large tap target showing phone or email         */
+/* ================================================================ */
+.contact-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  padding: 40px;
+}
+.contact-modal-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  align-items: center;
+  max-width: 720px;
+  width: 100%;
+  background: var(--nu-wisp);
+  border-radius: 32px;
+  padding: 56px 48px 48px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  cursor: default;
+  border: 1px solid var(--nu-cloud);
+}
+.modal-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--nu-powder);
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s, transform 0.3s var(--ease-out-soft);
+  z-index: 2;
+}
+.modal-close:hover {
+  background: var(--nu-cloud);
+  transform: scale(1.08) rotate(90deg);
+}
+.close-line {
+  position: absolute;
+  width: 22px; height: 2.5px;
+  background: var(--nu-midnight);
+  border-radius: 1.5px;
+}
+.close-line--1 { transform: rotate(45deg); }
+.close-line--2 { transform: rotate(-45deg); }
+
+.modal-content {
+  display: flex; flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+.modal-eyebrow {
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--nu-blue);
+  margin-bottom: 6px;
+}
+.modal-icon-big {
+  font-size: 96px;
+  color: var(--nu-blue);
+  line-height: 1;
+  margin-bottom: 6px;
+  animation: floatY 3s ease-in-out infinite;
+}
+.modal-label {
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--nu-navy);
+  opacity: 0.7;
+}
+.modal-value {
+  font-family: var(--font-serif);
+  font-size: 56px; line-height: 1.1;
+  color: var(--nu-midnight);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  padding: 18px 32px;
+  background: var(--nu-powder);
+  border-radius: 18px;
+  border: 2px solid var(--nu-blue);
+  transition: background 0.3s, transform 0.3s var(--ease-out-soft);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  cursor: pointer;
+}
+.modal-value:hover {
+  background: var(--nu-blue);
+  color: var(--nu-wisp);
+  transform: translateY(-3px);
+}
+.modal-hint {
+  font-size: 14px; line-height: 1.5;
+  color: var(--nu-navy);
+  opacity: 0.65;
+  margin-top: 6px;
+}
+
+/* Modal transition */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s var(--ease-out-soft);
+}
+.modal-enter-active .contact-modal-card,
+.modal-leave-active .contact-modal-card {
+  transition: transform 0.4s var(--ease-out-soft), opacity 0.3s;
+}
+.modal-enter-from,
+.modal-leave-to { opacity: 0; }
+.modal-enter-from .contact-modal-card,
+.modal-leave-to .contact-modal-card {
+  transform: scale(0.92);
+  opacity: 0;
+}
+.modal-enter-to .contact-modal-card,
+.modal-leave-from .contact-modal-card {
+  transform: scale(1);
+  opacity: 1;
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
 /* Mobile / narrow */
 @media (max-width: 720px) {
   .hero { height: auto; padding-bottom: 60px; }
@@ -614,5 +804,9 @@ const admission = {
   .you-are-here { top: auto; bottom: 30px; left: 32px; }
   .info { padding: 40px 24px; }
   .info-grid { grid-template-columns: 1fr; gap: 20px; }
+  .contact-modal { padding: 16px; }
+  .contact-modal-card { padding: 48px 28px 36px; }
+  .modal-value { font-size: 32px; padding: 14px 18px; }
+  .modal-icon-big { font-size: 72px; }
 }
 </style>
