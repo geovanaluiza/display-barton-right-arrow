@@ -63,22 +63,22 @@ const admission = {
       <!-- Wayfinding sign: solid gold arrow (rectangle shaft + triangle head) -->
       <div class="big-arrow" role="img" aria-label="This way to Admissions Office">
         <div class="arrow-icon">
-          <svg viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg viewBox="0 0 1280 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
               <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%"   stop-color="#fbd945" />
                 <stop offset="100%" stop-color="#ffbc2d" />
               </linearGradient>
             </defs>
-            <!-- Solid gold rectangle shaft (left) -->
+            <!-- Solid gold rectangle shaft (left, horizontal beam) -->
             <rect
-              x="40" y="200"
-              width="760" height="240"
+              x="40" y="90"
+              width="900" height="180"
               fill="url(#arrowGrad)"
             />
             <!-- Solid gold triangle arrowhead (right) -->
             <polygon
-              points="560,80 560,560 1060,320"
+              points="780,30 780,330 1240,180"
               fill="url(#arrowGrad)"
             />
           </svg>
@@ -300,7 +300,7 @@ const admission = {
 }
 
 .arrow-icon {
-  width: 820px;
+  width: 760px;
   flex-shrink: 0;
   filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
   animation: pulse-tip 2s ease-in-out infinite;
@@ -331,7 +331,7 @@ const admission = {
 }
 .caption-name {
   font-family: var(--font-serif);
-  font-size: 52px; line-height: 1.05;
+  font-size: 58px; line-height: 1.05;
   color: var(--nu-wisp);
   letter-spacing: -0.01em;
 }
