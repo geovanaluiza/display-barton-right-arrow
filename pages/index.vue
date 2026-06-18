@@ -197,61 +197,27 @@ const admission = {
 
       <!-- FLOATING CARDS OVERLAY — anchored to bottom of hero photo -->
       <div class="cards-overlay">
-        <div class="info-grid">
-          <!-- HOURS (compact, status-focused) -->
-          <div class="info-card hours-card">
-            <div class="info-eyebrow">Office Hours</div>
-            <div class="hours-status">
-              <span class="status-dot" />
-              <span class="status-text">Open today until 5 PM</span>
-            </div>
-            <button class="hours-toggle" type="button" @click="openHoursModal">
-              See full schedule
-            </button>
-          </div>
+        <div class="quick-grid">
+          <!-- 5 equal-sized glass icon-only cards (steps on click) -->
+          <button class="quick-card" type="button" @click="openContact('call')" aria-label="Call us">
+            <div class="quick-icon">☎</div>
+          </button>
 
-          <!-- PRIMARY CTA — Schedule a Tour -->
-          <div class="info-card expect-card expect-card--primary">
-            <div class="info-eyebrow">What to expect</div>
-            <button class="primary-cta" type="button" @click="openHelp('visit')">
-              <span class="primary-cta-icon">◈</span>
-              <span class="primary-cta-text">
-                <span class="primary-cta-line">Schedule a</span>
-                <span class="primary-cta-line primary-cta-line--bold">Campus Tour</span>
-              </span>
-              <span class="primary-cta-arrow">&rarr;</span>
-            </button>
-            <ul class="expect-icons">
-              <li v-for="(w, i) in admission.what" :key="i"
-                  class="expect-icon-item"
-                  role="button"
-                  tabindex="0"
-                  @click="openHelp(w.key)"
-                  @keydown.enter="openHelp(w.key)"
-                  @keydown.space.prevent="openHelp(w.key)"
-              >
-                <span class="expect-icon-mark">{{ w.icon }}</span>
-                <span class="expect-icon-label">{{ w.label }}</span>
-                <span class="expect-icon-info" aria-hidden="true">i</span>
-              </li>
-            </ul>
-          </div>
+          <button class="quick-card" type="button" @click="openContact('email')" aria-label="Email us">
+            <div class="quick-icon">✉</div>
+          </button>
 
-          <!-- CONTACT (secondary) -->
-          <div class="info-card contact-card">
-            <div class="info-eyebrow">Reach us</div>
-            <div class="contact-grid">
-              <button class="contact-mini" type="button" @click="openContact('call')" title="Show phone number">
-                <span class="contact-mini-icon">☎</span>
-                <span class="contact-mini-label">Call</span>
-              </button>
-              <button class="contact-mini" type="button" @click="openContact('email')" title="Show email">
-                <span class="contact-mini-icon">✉</span>
-                <span class="contact-mini-label">Email</span>
-              </button>
-            </div>
-            <div class="contact-detail">Barton Hall &middot; 2nd Floor</div>
-          </div>
+          <button class="quick-card" type="button" @click="openHelp('apply')" aria-label="Apply">
+            <div class="quick-icon">✦</div>
+          </button>
+
+          <button class="quick-card" type="button" @click="openHelp('visit')" aria-label="Campus tour">
+            <div class="quick-icon">◈</div>
+          </button>
+
+          <button class="quick-card" type="button" @click="openHoursModal" aria-label="Office hours">
+            <div class="quick-icon">⏰</div>
+          </button>
         </div>
       </div>
     </section>
@@ -456,37 +422,91 @@ const admission = {
 }
 
 /* ================================================================ */
-/*  CARDS OVERLAY — floating glass cards in last 25% of hero height  */
+/*  CARDS OVERLAY — 5 equal glass icon cards at bottom of hero        */
 /* ================================================================ */
 .cards-overlay {
   position: absolute;
   left: 0; right: 0;
   bottom: 0;
-  height: 25%;
-  min-height: 420px;
-  max-height: 520px;
   z-index: 6;
-  padding: 28px 56px 40px;
+  padding: 32px 56px 56px;
+  display: flex; align-items: center; justify-content: center;
 }
-.cards-overlay .info-grid {
+.quick-grid {
   display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-columns: repeat(5, 1fr);
   gap: 22px;
-  align-items: stretch;
-  margin: 0;
+  width: 100%;
+  max-width: 1400px;
 }
-.cards-overlay .info-card {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-  border-radius: 28px;
-  padding: 22px 22px 20px;
+.quick-card {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 16px;
+  /* Sutil glassmorphism — transparente, sem competir com a seta */
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  color: var(--nu-wisp);
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-out-soft),
+              background 0.4s,
+              border-color 0.4s,
+              box-shadow 0.4s;
+  /* Movimento sutil — só 3px, lento e discreto */
+  animation: cardFloat 7s ease-in-out infinite;
 }
-.cards-overlay .info-card.expect-card--primary {
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.94) 0%, rgba(253, 247, 232, 0.94) 100%);
-  border-color: var(--nu-tour);
+.quick-card:nth-child(1) { animation-delay: 0s; }
+.quick-card:nth-child(2) { animation-delay: 0.7s; }
+.quick-card:nth-child(3) { animation-delay: 1.4s; }
+.quick-card:nth-child(4) { animation-delay: 2.1s; }
+.quick-card:nth-child(5) { animation-delay: 2.8s; }
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+/* Shine sweep on hover (discreto) */
+.quick-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -120%;
+  width: 50%; height: 100%;
+  background: linear-gradient(115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%);
+  transform: skewX(-20deg);
+  transition: left 0.8s var(--ease-out-soft);
+  pointer-events: none;
+}
+.quick-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(251, 217, 69, 0.5);
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(251, 217, 69, 0.35);
+}
+.quick-card:hover::before { left: 130%; }
+.quick-card:active { transform: translateY(-2px) scale(1.0); }
+.quick-icon {
+  font-size: 72px;
+  line-height: 1;
+  color: var(--nu-wisp);
+  opacity: 0.92;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+  transition: transform 0.4s var(--ease-out-soft), opacity 0.3s, filter 0.3s;
+}
+.quick-card:hover .quick-icon {
+  transform: scale(1.12) rotate(-6deg);
+  opacity: 1;
+  color: var(--nu-tour);
+  filter: drop-shadow(0 4px 12px rgba(251, 217, 69, 0.5));
 }
 
 /* "You are here" pin (top-left of hero) */
