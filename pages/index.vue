@@ -142,14 +142,6 @@ const admission = {
         </div>
       </div>
 
-      <!-- Meta pill: "On your right" — same distance from arrow as bottom buttons -->
-      <div class="hero-meta" aria-label="On your right">
-        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="7" y1="17" x2="17" y2="7" />
-          <polyline points="7 7 17 7 17 17" />
-        </svg>
-      </div>
-
       <!-- FLOATING CARDS OVERLAY — anchored to bottom of hero photo -->
       <div class="cards-overlay">
         <div class="quick-grid">
@@ -641,31 +633,6 @@ const admission = {
 .hero-blurb strong {
   color: var(--nu-tour);
   font-weight: 800;
-}
-.hero-meta {
-  position: absolute;
-  /* Arrow center is at 58%. Bottom cards top-edge is at ~85% (14% from bottom + card height ~150).
-     So distance = ~27% of hero.
-     Meta pill goes the same distance ABOVE the arrow: 58% - 27% = 31% */
-  top: 31%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex; align-items: center; gap: 10px;
-  background: rgba(0, 38, 61, 0.55);
-  padding: 12px 20px;
-  border-radius: 999px;
-  border: 1px solid rgba(251, 217, 69, 0.4);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: fadeUp 0.8s var(--ease-out-soft) 0.4s both;
-}
-.hero-meta .icon-svg {
-  width: 32px;
-  height: 32px;
-  color: var(--nu-tour);
-  opacity: 1;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
 }
 
 /* ============ INFO SECTION ============ */
