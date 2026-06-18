@@ -110,14 +110,18 @@ const admission = {
       <div class="hero-veil" />
       <div class="hero-bottom-grad" />
 
-      <!-- "You are here" pin (icon only, no text) -->
+      <!-- "You are here" pin -->
       <div class="you-are-here">
         <div class="here-pulse" />
         <div class="here-ping" />
         <div class="here-dot" />
+        <div class="here-label">
+          <span class="here-eyebrow">You are here</span>
+          <span class="here-name">Barton 2nd Floor</span>
+        </div>
       </div>
 
-      <!-- Wayfinding sign: solid gold arrow (icon only, no caption) -->
+      <!-- Wayfinding sign: solid gold arrow (rectangle shaft + triangle head) -->
       <div class="big-arrow" role="img" aria-label="This way to Admissions Office">
         <div class="arrow-icon">
           <svg viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -139,6 +143,29 @@ const admission = {
               fill="url(#arrowGrad)"
             />
           </svg>
+        </div>
+        <div class="arrow-caption">
+          <span class="caption-line">This way to</span>
+          <span class="caption-name">Admissions Office</span>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="ey-dot" />
+          Barton Hall Lobby
+        </div>
+        <h1 class="hero-title">
+          Office of<br/>
+          <span class="hero-accent">Admissions.</span>
+        </h1>
+        <p class="hero-blurb">
+          Welcome to Northwest. We are waiting for you.
+        </p>
+        <div class="hero-meta">
+          <span><strong>↗</strong> On your right</span>
+          <span class="dot" />
+          <span>Office of Admissions</span>
         </div>
       </div>
 
@@ -453,11 +480,17 @@ const admission = {
 /* "You are here" pin (top-left of hero) */
 .you-are-here {
   position: absolute;
-  top: 6%; left: 50%;
-  transform: translateX(-50%);
+  top: 6%; left: 6%;
   z-index: 5;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; gap: 14px;
   animation: fadeUp 0.8s var(--ease-out-soft) 0.4s both;
+  background: rgba(0, 38, 61, 0.7);
+  padding: 10px 18px 10px 14px;
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(251, 217, 69, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 .here-dot {
   position: relative;
