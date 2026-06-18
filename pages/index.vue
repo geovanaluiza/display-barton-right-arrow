@@ -46,6 +46,32 @@ const hoursModalOpen = ref(false)
 function openHoursModal() { hoursModalOpen.value = true }
 function closeHoursModal() { hoursModalOpen.value = false }
 
+// === Copy-to-clipboard for Call/Email (display is locked, no external links) ===
+const copied = ref<'phone' | 'email' | null>(null)
+async function copyToClipboard(text: string, kind: 'phone' | 'email') {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      // Fallback for environments without clipboard API
+      const ta = document.createElement('textarea')
+      ta.value = text
+      ta.style.position = 'fixed'
+      ta.style.opacity = '0'
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+    }
+    copied.value = kind
+    setTimeout(() => {
+      if (copied.value === kind) copied.value = null
+    }, 2000)
+  } catch (e) {
+    // Silent fail — display is locked, no external navigation allowed
+  }
+}
+
 // === Hero photo (First Day — students arriving) ===
 const lobbyPhoto = '250825FirstDayEdited (11).jpg'
 
@@ -245,17 +271,24 @@ const admission = {
             <div class="modal-eyebrow">Reach the Admissions Office</div>
             <div class="modal-icon-big">☎</div>
             <h2 class="help-modal-title">Call us</h2>
-            <a class="modal-value" :href="`tel:${admission.phone.replace(/[^0-9+]/g, '')}`">
-              {{ admission.phone }}
-            </a>
+            <button
+              class="modal-value modal-value--button"
+              type="button"
+              @click="copyToClipboard(admission.phone, 'phone')"
+            >
+              <span class="modal-value-text">{{ admission.phone }}</span>
+              <span class="modal-value-action">
+                {{ copied === 'phone' ? '✓ Copied' : 'Copy number' }}
+              </span>
+            </button>
             <ol class="step-list">
               <li class="step-item">
                 <span class="step-num">1</span>
-                <span class="step-body"><strong>Tap the number above</strong> to open your phone app.</span>
+                <span class="step-body"><strong>Tap "Copy number"</strong> to copy the phone number to your clipboard.</span>
               </li>
               <li class="step-item">
                 <span class="step-num">2</span>
-                <span class="step-body"><strong>Hit call</strong> — a real person picks up during office hours.</span>
+                <span class="step-body"><strong>Paste into your phone</strong> app and hit call — a real person picks up during office hours.</span>
               </li>
               <li class="step-item">
                 <span class="step-num">3</span>
@@ -268,17 +301,24 @@ const admission = {
             <div class="modal-eyebrow">Reach the Admissions Office</div>
             <div class="modal-icon-big">✉</div>
             <h2 class="help-modal-title">Email us</h2>
-            <a class="modal-value" :href="`mailto:${admission.email}`">
-              {{ admission.email }}
-            </a>
+            <button
+              class="modal-value modal-value--button"
+              type="button"
+              @click="copyToClipboard(admission.email, 'email')"
+            >
+              <span class="modal-value-text">{{ admission.email }}</span>
+              <span class="modal-value-action">
+                {{ copied === 'email' ? '✓ Copied' : 'Copy email' }}
+              </span>
+            </button>
             <ol class="step-list">
               <li class="step-item">
                 <span class="step-num">1</span>
-                <span class="step-body"><strong>Tap the address above</strong> to open your email app.</span>
+                <span class="step-body"><strong>Tap "Copy email"</strong> to copy the address to your clipboard.</span>
               </li>
               <li class="step-item">
                 <span class="step-num">2</span>
-                <span class="step-body"><strong>Write a short note</strong> with your name, your grade, and your question.</span>
+                <span class="step-body"><strong>Open your email app</strong>, paste, and write a short note with your name, grade, and question.</span>
               </li>
               <li class="step-item">
                 <span class="step-num">3</span>
@@ -1090,11 +1130,41 @@ const admission = {
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(251, 217, 69, 0.2);
 }
+.modal-value--button {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px;
+  font-family: var(--font-serif);
+  cursor: pointer;
+  width: auto;
+  max-width: 100%;
+}
+.modal-value-text {
+  font-size: 48px; line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--nu-midnight);
+}
+.modal-value-action {
+  font-family: var(--font-sans, system-ui);
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--nu-blue);
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(0, 104, 187, 0.08);
+  border: 1.5px solid var(--nu-blue);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
 .modal-value:hover {
   background: var(--nu-tour);
   color: var(--nu-midnight);
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(251, 217, 69, 0.45);
+}
+.modal-value:hover .modal-value-text { color: var(--nu-midnight); }
+.modal-value:hover .modal-value-action {
+  background: var(--nu-wisp);
+  color: var(--nu-navy);
+  border-color: var(--nu-navy);
 }
 .modal-hint-soft {
   font-size: 13px;
