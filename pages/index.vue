@@ -46,32 +46,6 @@ const hoursModalOpen = ref(false)
 function openHoursModal() { hoursModalOpen.value = true }
 function closeHoursModal() { hoursModalOpen.value = false }
 
-// === Copy-to-clipboard for Call/Email (display is locked, no external links) ===
-const copied = ref<'phone' | 'email' | null>(null)
-async function copyToClipboard(text: string, kind: 'phone' | 'email') {
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(text)
-    } else {
-      // Fallback for environments without clipboard API
-      const ta = document.createElement('textarea')
-      ta.value = text
-      ta.style.position = 'fixed'
-      ta.style.opacity = '0'
-      document.body.appendChild(ta)
-      ta.select()
-      document.execCommand('copy')
-      document.body.removeChild(ta)
-    }
-    copied.value = kind
-    setTimeout(() => {
-      if (copied.value === kind) copied.value = null
-    }, 2000)
-  } catch (e) {
-    // Silent fail — display is locked, no external navigation allowed
-  }
-}
-
 // === Hero photo (First Day — students arriving) ===
 const lobbyPhoto = '250825FirstDayEdited (11).jpg'
 
@@ -136,18 +110,14 @@ const admission = {
       <div class="hero-veil" />
       <div class="hero-bottom-grad" />
 
-      <!-- "You are here" pin -->
+      <!-- "You are here" pin (icon only, no text) -->
       <div class="you-are-here">
         <div class="here-pulse" />
         <div class="here-ping" />
         <div class="here-dot" />
-        <div class="here-label">
-          <span class="here-eyebrow">You are here</span>
-          <span class="here-name">Barton 2nd Floor</span>
-        </div>
       </div>
 
-      <!-- Wayfinding sign: solid gold arrow (rectangle shaft + triangle head) -->
+      <!-- Wayfinding sign: solid gold arrow (icon only, no caption) -->
       <div class="big-arrow" role="img" aria-label="This way to Admissions Office">
         <div class="arrow-icon">
           <svg viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -170,29 +140,14 @@ const admission = {
             />
           </svg>
         </div>
-        <div class="arrow-caption">
-          <span class="caption-line">This way to</span>
-          <span class="caption-name">Admissions Office</span>
-        </div>
       </div>
 
-      <div class="hero-content">
-        <div class="hero-eyebrow">
-          <span class="ey-dot" />
-          Barton Hall Lobby
-        </div>
-        <h1 class="hero-title">
-          Office of<br/>
-          <span class="hero-accent">Admissions.</span>
-        </h1>
-        <p class="hero-blurb">
-          Welcome to Northwest. We are waiting for you.
-        </p>
-        <div class="hero-meta">
-          <span><strong>↗</strong> On your right</span>
-          <span class="dot" />
-          <span>Office of Admissions</span>
-        </div>
+      <!-- Meta pill: "On your right" — same distance from arrow as bottom buttons -->
+      <div class="hero-meta" aria-label="On your right">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="7" y1="17" x2="17" y2="7" />
+          <polyline points="7 7 17 7 17 17" />
+        </svg>
       </div>
 
       <!-- FLOATING CARDS OVERLAY — anchored to bottom of hero photo -->
@@ -200,23 +155,39 @@ const admission = {
         <div class="quick-grid">
           <!-- 5 equal-sized glass icon-only cards (steps on click) -->
           <button class="quick-card" type="button" @click="openContact('call')" aria-label="Call us">
-            <div class="quick-icon">☎</div>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
           </button>
 
           <button class="quick-card" type="button" @click="openContact('email')" aria-label="Email us">
-            <div class="quick-icon">✉</div>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
           </button>
 
           <button class="quick-card" type="button" @click="openHelp('apply')" aria-label="Apply">
-            <div class="quick-icon">✦</div>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="9" y1="13" x2="15" y2="13" />
+              <line x1="9" y1="17" x2="15" y2="17" />
+            </svg>
           </button>
 
           <button class="quick-card" type="button" @click="openHelp('visit')" aria-label="Campus tour">
-            <div class="quick-icon">◈</div>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
           </button>
 
           <button class="quick-card" type="button" @click="openHoursModal" aria-label="Office hours">
-            <div class="quick-icon">⏰</div>
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
           </button>
         </div>
       </div>
@@ -235,62 +206,31 @@ const admission = {
 
           <div v-if="activeContact === 'call'" class="modal-content">
             <div class="modal-eyebrow">Reach the Admissions Office</div>
-            <div class="modal-icon-big">☎</div>
+            <div class="modal-icon-big">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </div>
             <h2 class="help-modal-title">Call us</h2>
-            <button
-              class="modal-value modal-value--button"
-              type="button"
-              @click="copyToClipboard(admission.phone, 'phone')"
-            >
+            <div class="modal-value modal-value--display">
               <span class="modal-value-text">{{ admission.phone }}</span>
-              <span class="modal-value-action">
-                {{ copied === 'phone' ? '✓ Copied' : 'Copy number' }}
-              </span>
-            </button>
-            <ol class="step-list">
-              <li class="step-item">
-                <span class="step-num">1</span>
-                <span class="step-body"><strong>Tap "Copy number"</strong> to copy the phone number to your clipboard.</span>
-              </li>
-              <li class="step-item">
-                <span class="step-num">2</span>
-                <span class="step-body"><strong>Paste into your phone</strong> app and hit call — a real person picks up during office hours.</span>
-              </li>
-              <li class="step-item">
-                <span class="step-num">3</span>
-                <span class="step-body"><strong>Ask anything</strong> about applying, visiting, or paying for college.</span>
-              </li>
-            </ol>
+            </div>
+            <p class="modal-message">We are at your disposal to answer any question about applying, visiting, or paying for college.</p>
           </div>
 
           <div v-else-if="activeContact === 'email'" class="modal-content">
             <div class="modal-eyebrow">Reach the Admissions Office</div>
-            <div class="modal-icon-big">✉</div>
+            <div class="modal-icon-big">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
             <h2 class="help-modal-title">Email us</h2>
-            <button
-              class="modal-value modal-value--button"
-              type="button"
-              @click="copyToClipboard(admission.email, 'email')"
-            >
+            <div class="modal-value modal-value--display">
               <span class="modal-value-text">{{ admission.email }}</span>
-              <span class="modal-value-action">
-                {{ copied === 'email' ? '✓ Copied' : 'Copy email' }}
-              </span>
-            </button>
-            <ol class="step-list">
-              <li class="step-item">
-                <span class="step-num">1</span>
-                <span class="step-body"><strong>Tap "Copy email"</strong> to copy the address to your clipboard.</span>
-              </li>
-              <li class="step-item">
-                <span class="step-num">2</span>
-                <span class="step-body"><strong>Open your email app</strong>, paste, and write a short note with your name, grade, and question.</span>
-              </li>
-              <li class="step-item">
-                <span class="step-num">3</span>
-                <span class="step-body"><strong>Send</strong> — we reply within one business day.</span>
-              </li>
-            </ol>
+            </div>
+            <p class="modal-message">We are at your disposal to answer any question about applying, visiting, or paying for college.</p>
           </div>
         </div>
       </div>
@@ -344,7 +284,12 @@ const admission = {
 
           <div class="modal-content">
             <div class="modal-eyebrow">Office Hours</div>
-            <div class="modal-icon-big">⏰</div>
+            <div class="modal-icon-big">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
             <h2 class="help-modal-title">When we are open</h2>
             <div class="hours-grid">
               <div class="hours-line"><span class="hours-day-name">Monday &ndash; Thursday</span><span class="hours-time-text">8:00 AM &ndash; 5:00 PM</span></div>
@@ -427,7 +372,7 @@ const admission = {
 .cards-overlay {
   position: absolute;
   left: 0; right: 0;
-  bottom: 14%;
+  bottom: 9%;
   z-index: 6;
   padding: 24px 56px;
   display: flex; align-items: center; justify-content: center;
@@ -494,35 +439,33 @@ const admission = {
 }
 .quick-card:hover::before { left: 130%; }
 .quick-card:active { transform: translateY(-2px) scale(1.0); }
-.quick-icon {
-  font-size: 72px;
-  line-height: 1;
+/* === Uniform SVG icons (same size + color across all 5 quick cards + meta) === */
+.icon-svg {
+  width: 64px;
+  height: 64px;
   color: var(--nu-wisp);
   opacity: 0.92;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
-  transition: transform 0.4s var(--ease-out-soft), opacity 0.3s, filter 0.3s;
+  transition: transform 0.4s var(--ease-out-soft),
+              opacity 0.3s,
+              filter 0.3s,
+              color 0.3s;
 }
-.quick-card:hover .quick-icon {
+.quick-card:hover .icon-svg {
   transform: scale(1.12) rotate(-6deg);
   opacity: 1;
   color: var(--nu-tour);
-  filter: drop-shadow(0 4px 12px rgba(251, 217, 69, 0.5));
+  filter: drop-shadow(0 4px 12px rgba(251, 217, 69, 0.55));
 }
 
 /* "You are here" pin (top-left of hero) */
 .you-are-here {
   position: absolute;
-  top: 10%; left: 6%;
+  top: 6%; left: 50%;
+  transform: translateX(-50%);
   z-index: 5;
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; justify-content: center;
   animation: fadeUp 0.8s var(--ease-out-soft) 0.4s both;
-  background: rgba(0, 38, 61, 0.7);
-  padding: 10px 18px 10px 14px;
-  border-radius: 999px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(251, 217, 69, 0.5);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 .here-dot {
   position: relative;
@@ -700,29 +643,29 @@ const admission = {
   font-weight: 800;
 }
 .hero-meta {
-  display: flex; align-items: center; gap: 18px;
-  font-size: 16px; font-weight: 600;
-  color: var(--nu-wisp);
+  position: absolute;
+  /* Arrow center is at 58%. Bottom cards top-edge is at ~85% (14% from bottom + card height ~150).
+     So distance = ~27% of hero.
+     Meta pill goes the same distance ABOVE the arrow: 58% - 27% = 31% */
+  top: 31%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex; align-items: center; gap: 10px;
   background: rgba(0, 38, 61, 0.55);
-  padding: 14px 22px;
+  padding: 12px 20px;
   border-radius: 999px;
   border: 1px solid rgba(251, 217, 69, 0.4);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  align-self: flex-start;
   animation: fadeUp 0.8s var(--ease-out-soft) 0.4s both;
 }
-.hero-meta strong {
+.hero-meta .icon-svg {
+  width: 32px;
+  height: 32px;
   color: var(--nu-tour);
-  font-family: var(--font-serif);
-  font-size: 22px;
-  margin-right: 4px;
-}
-.hero-meta .dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--nu-tour);
-  opacity: 0.7;
+  opacity: 1;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
 }
 
 /* ============ INFO SECTION ============ */
@@ -1127,12 +1070,21 @@ const admission = {
   margin-bottom: 6px;
 }
 .modal-icon-big {
-  font-size: 88px;
+  display: flex; align-items: center; justify-content: center;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(251, 217, 69, 0.12);
+  border: 2px solid var(--nu-tour);
   color: var(--nu-tour);
-  line-height: 1;
   margin-bottom: 6px;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
   animation: floatY 3s ease-in-out infinite;
+}
+.modal-icon-big .icon-svg {
+  width: 64px; height: 64px;
+  opacity: 1;
+  filter: none;
+  color: var(--nu-tour);
 }
 .modal-value {
   font-family: var(--font-serif);
@@ -1147,32 +1099,30 @@ const admission = {
   transition: background 0.3s, transform 0.3s var(--ease-out-soft), color 0.3s;
   word-break: break-word;
   overflow-wrap: break-word;
-  cursor: pointer;
+  cursor: default;
   box-shadow: 0 4px 12px rgba(251, 217, 69, 0.2);
 }
-.modal-value--button {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px;
-  font-family: var(--font-serif);
-  cursor: pointer;
-  width: auto;
-  max-width: 100%;
+.modal-value--display {
+  display: inline-block;
+  cursor: default;
+  text-align: center;
 }
 .modal-value-text {
   font-size: 48px; line-height: 1.1;
   letter-spacing: -0.01em;
   color: var(--nu-midnight);
 }
-.modal-value-action {
-  font-family: var(--font-sans, system-ui);
-  font-size: 13px; font-weight: 800;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--nu-blue);
-  padding: 4px 14px;
-  border-radius: 999px;
-  background: rgba(0, 104, 187, 0.08);
-  border: 1.5px solid var(--nu-blue);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+.modal-message {
+  font-size: 19px; line-height: 1.55;
+  color: var(--nu-navy);
+  text-align: center;
+  max-width: 52ch;
+  margin: 8px 0 0;
+  padding: 18px 24px;
+  background: rgba(0, 104, 187, 0.05);
+  border-radius: 14px;
+  border-left: 3px solid var(--nu-blue);
+  border-right: 3px solid var(--nu-blue);
 }
 .modal-value:hover {
   background: var(--nu-tour);
