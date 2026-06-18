@@ -462,9 +462,9 @@ const admission = {
 .icon-svg {
   width: 64px;
   height: 64px;
-  color: var(--nu-wisp);
-  opacity: 0.92;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+  color: var(--nu-tour);
+  opacity: 0.95;
+  filter: drop-shadow(0 4px 12px rgba(251, 217, 69, 0.55));
   transition: transform 0.4s var(--ease-out-soft),
               opacity 0.3s,
               filter 0.3s,
@@ -473,8 +473,8 @@ const admission = {
 .quick-card:hover .icon-svg {
   transform: scale(1.12) rotate(-6deg);
   opacity: 1;
-  color: var(--nu-tour);
-  filter: drop-shadow(0 4px 12px rgba(251, 217, 69, 0.55));
+  color: var(--nu-wisp);
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.5));
 }
 
 /* "You are here" pin (top-left of hero) */
@@ -666,6 +666,32 @@ const admission = {
 .hero-blurb strong {
   color: var(--nu-tour);
   font-weight: 800;
+}
+.hero-meta {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-size: 16px; font-weight: 600;
+  color: var(--nu-wisp);
+  background: rgba(0, 38, 61, 0.55);
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(251, 217, 69, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  align-self: flex-start;
+  animation: fadeUp 0.8s var(--ease-out-soft) 0.4s both;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.hero-meta strong {
+  color: var(--nu-tour);
+  font-family: var(--font-serif);
+  font-size: 22px;
+  margin-right: 4px;
+}
+.hero-meta .dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--nu-tour);
+  opacity: 0.7;
 }
 
 /* ============ INFO SECTION ============ */
