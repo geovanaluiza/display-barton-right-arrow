@@ -391,7 +391,7 @@ const admission = {
 .cards-overlay {
   position: absolute;
   left: 0; right: 0;
-  bottom: 9%;
+  bottom: 13%;
   z-index: 6;
   padding: 24px 56px;
   display: flex; align-items: center; justify-content: center;
