@@ -427,9 +427,9 @@ const admission = {
 .cards-overlay {
   position: absolute;
   left: 0; right: 0;
-  bottom: 0;
+  bottom: 14%;
   z-index: 6;
-  padding: 32px 56px 56px;
+  padding: 24px 56px;
   display: flex; align-items: center; justify-content: center;
 }
 .quick-grid {
