@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 
 // === Barton 2nd Floor Lobby — directs new students & parents to Admissions ===
 // A single-purpose, focused wayfinding screen.
-// "You are here" pin on the map + a massive left arrow pointing to
+// "You are here" pin on the map + a massive right arrow pointing to
 // the Admission Office, plus practical info: hours, what to expect,
 // and a friendly welcome.
 
@@ -119,12 +119,8 @@ const admission = {
         </div>
       </div>
 
-      <!-- Wayfinding sign: solid gold arrow (rectangle shaft + triangle head, mirrored left) -->
+      <!-- Wayfinding sign: solid gold arrow (rectangle shaft + triangle head) -->
       <div class="big-arrow" role="img" aria-label="This way to Admissions Office">
-        <div class="arrow-caption">
-          <span class="caption-line">This way to</span>
-          <span class="caption-name">Admissions Office</span>
-        </div>
         <div class="arrow-icon">
           <svg viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
@@ -133,18 +129,22 @@ const admission = {
                 <stop offset="100%" stop-color="#ffbc2d" />
               </linearGradient>
             </defs>
-            <!-- Solid gold rectangle shaft (right) -->
+            <!-- Solid gold rectangle shaft (left) -->
             <rect
-              x="320" y="200"
+              x="40" y="200"
               width="760" height="240"
               fill="url(#arrowGrad)"
             />
-            <!-- Solid gold triangle arrowhead (left, pointing left) -->
+            <!-- Solid gold triangle arrowhead (right) -->
             <polygon
-              points="560,80 560,560 60,320"
+              points="560,80 560,560 1060,320"
               fill="url(#arrowGrad)"
             />
           </svg>
+        </div>
+        <div class="arrow-caption">
+          <span class="caption-line">This way to</span>
+          <span class="caption-name">Admissions Office</span>
         </div>
       </div>
 
@@ -161,7 +161,7 @@ const admission = {
           Welcome to Northwest. We are waiting for you.
         </p>
         <div class="hero-meta">
-          <span><strong>↖</strong> On your left</span>
+          <span><strong>↗</strong> On your right</span>
           <span class="dot" />
           <span>Office of Admissions</span>
         </div>
@@ -466,7 +466,7 @@ const admission = {
 /* === WAYFINDING ARROW: static sign-style indicator (solid triangle, no track) === */
 .big-arrow {
   position: absolute;
-  top: 58%; left: 1%;
+  top: 58%; right: 1%;
   transform: translateY(-50%);
   z-index: 4;
   display: flex; flex-direction: row; align-items: center;
@@ -476,11 +476,11 @@ const admission = {
 }
 @keyframes nudgeY {
   0%, 100% { transform: translate(0, -50%); }
-  50%      { transform: translate(14px, -50%); }
+  50%      { transform: translate(-14px, -50%); }
 }
 @keyframes nudge {
   0%, 100% { transform: translate(0, 0); }
-  50%      { transform: translate(14px, 0); }
+  50%      { transform: translate(-14px, 0); }
 }
 
 .arrow-icon {
@@ -496,8 +496,8 @@ const admission = {
 
 .arrow-caption {
   display: flex; flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
+  align-items: flex-start;
+  text-align: left;
   color: var(--nu-wisp);
   background: rgba(0, 38, 61, 0.82);
   backdrop-filter: blur(10px);
