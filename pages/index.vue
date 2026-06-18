@@ -463,8 +463,8 @@ const admission = {
   width: 64px;
   height: 64px;
   color: var(--nu-tour);
-  opacity: 0.95;
-  filter: drop-shadow(0 4px 12px rgba(251, 217, 69, 0.55));
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 6px rgba(251, 217, 69, 0.28));
   transition: transform 0.4s var(--ease-out-soft),
               opacity 0.3s,
               filter 0.3s,
@@ -473,8 +473,8 @@ const admission = {
 .quick-card:hover .icon-svg {
   transform: scale(1.12) rotate(-6deg);
   opacity: 1;
-  color: var(--nu-wisp);
-  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.5));
+  color: var(--nu-amber);
+  filter: drop-shadow(0 3px 10px rgba(255, 188, 45, 0.4));
 }
 
 /* "You are here" pin (top-left of hero) */
