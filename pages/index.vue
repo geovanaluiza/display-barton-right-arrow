@@ -41,6 +41,11 @@ function closeHelp() {
 // === Office Hours — compact status first, full schedule on tap ===
 const hoursExpanded = ref(false)
 
+// === Hours modal state (full schedule) ===
+const hoursModalOpen = ref(false)
+function openHoursModal() { hoursModalOpen.value = true }
+function closeHoursModal() { hoursModalOpen.value = false }
+
 // === Hero photo (First Day — students arriving) ===
 const lobbyPhoto = '250825FirstDayEdited (11).jpg'
 
@@ -64,34 +69,31 @@ const admission = {
     {
       icon: '✦', label: 'Apply', key: 'apply' as HelpKey,
       title: 'Apply to Northwest',
-      summary: 'Get help with your application and admissions process.',
-      bullets: [
-        'Review transcripts and test scores in person',
-        'Walk through the application step-by-step',
-        'Get answers about prerequisites and deadlines',
-        'Submit your application on the spot if ready'
+      summary: 'We will walk you through the application — start to finish.',
+      steps: [
+        { title: 'Bring your materials', text: 'Transcripts, test scores, and any essay drafts you have ready.' },
+        { title: 'Meet with a counselor', text: 'A 15-minute review of your file and any questions about deadlines.' },
+        { title: 'Start or finish your application', text: 'Submit on the spot, or get help filling out the online form.' }
       ]
     },
     {
       icon: '◈', label: 'Visit', key: 'visit' as HelpKey,
       title: 'Visit the campus',
-      summary: 'Schedule a campus tour before you leave.',
-      bullets: [
-        'Guided walking tour of Barton Hall and Pecota',
-        'See a residence hall, the chapel, and a classroom',
-        'Meet current students and faculty',
-        'Optional meal at the dining hall'
+      summary: 'See Barton Hall, Pecota, and a residence hall in about 45 minutes.',
+      steps: [
+        { title: 'Tour Barton Hall', text: 'See classrooms, the chapel, and the dining hall with a current student guide.' },
+        { title: 'Walk through Pecota', text: 'Visit the Swoop Shop, student lounge, and the admissions office itself.' },
+        { title: 'Stay for lunch (optional)', text: 'Eat in the dining hall — your meal is on us.' }
       ]
     },
     {
       icon: '✣', label: 'Aid', key: 'aid' as HelpKey,
       title: 'Financial aid & scholarships',
-      summary: 'Get answers about cost, aid, and scholarships.',
-      bullets: [
-        'Estimate your financial aid package',
-        'Learn about Northwest academic scholarships',
-        'FAFSA filing questions, answered on site',
-        'Payment plan and tuition information'
+      summary: 'Get a free estimate of your aid package in about 10 minutes.',
+      steps: [
+        { title: 'Bring your tax info', text: 'Last year\'s tax return or FAFSA login helps us estimate your package quickly.' },
+        { title: 'Talk to a financial counselor', text: 'Learn about Northwest academic scholarships and federal grants you may qualify for.' },
+        { title: 'Set up a payment plan', text: 'If needed, we will walk through monthly payment options before you leave.' }
       ]
     }
   ]
@@ -177,22 +179,9 @@ const admission = {
               <span class="status-dot" />
               <span class="status-text">Open today until 5 PM</span>
             </div>
-            <button class="hours-toggle" type="button" @click="hoursExpanded = !hoursExpanded">
-              {{ hoursExpanded ? 'Hide full schedule' : 'See full schedule' }}
+            <button class="hours-toggle" type="button" @click="openHoursModal">
+              See full schedule
             </button>
-            <transition name="expand">
-              <div v-if="hoursExpanded" class="hours-detail">
-                <div class="hours-row">
-                  <span class="hours-day-name">Mon &ndash; Thu</span>
-                  <span class="hours-time-text">8:00 AM &ndash; 5:00 PM</span>
-                </div>
-                <div class="hours-row">
-                  <span class="hours-day-name">Friday</span>
-                  <span class="hours-time-text">8:00 AM &ndash; 4:00 PM</span>
-                </div>
-                <div class="hours-closed">Closed weekends</div>
-              </div>
-            </transition>
           </div>
 
           <!-- PRIMARY CTA — Schedule a Tour -->
@@ -242,7 +231,7 @@ const admission = {
     </section>
 
     <!-- ============================================================== -->
-    <!-- CONTACT MODAL — shows phone / email when visitor taps a button -->
+    <!-- CONTACT MODAL — Call / Email (with steps)                       -->
     <!-- ============================================================== -->
     <transition name="modal">
       <div v-if="isModalOpen" class="contact-modal" @click="closeContact">
@@ -253,30 +242,56 @@ const admission = {
           </button>
 
           <div v-if="activeContact === 'call'" class="modal-content">
-            <div class="modal-eyebrow">Call the Admissions Office</div>
+            <div class="modal-eyebrow">Reach the Admissions Office</div>
             <div class="modal-icon-big">☎</div>
-            <div class="modal-label">Tap to dial</div>
+            <h2 class="help-modal-title">Call us</h2>
             <a class="modal-value" :href="`tel:${admission.phone.replace(/[^0-9+]/g, '')}`">
               {{ admission.phone }}
             </a>
-            <div class="modal-hint">Monday &ndash; Thursday &middot; 8 AM &ndash; 5 PM<br/>Friday &middot; 8 AM &ndash; 4 PM</div>
+            <ol class="step-list">
+              <li class="step-item">
+                <span class="step-num">1</span>
+                <span class="step-body"><strong>Tap the number above</strong> to open your phone app.</span>
+              </li>
+              <li class="step-item">
+                <span class="step-num">2</span>
+                <span class="step-body"><strong>Hit call</strong> — a real person picks up during office hours.</span>
+              </li>
+              <li class="step-item">
+                <span class="step-num">3</span>
+                <span class="step-body"><strong>Ask anything</strong> about applying, visiting, or paying for college.</span>
+              </li>
+            </ol>
           </div>
 
           <div v-else-if="activeContact === 'email'" class="modal-content">
-            <div class="modal-eyebrow">Email the Admissions Office</div>
+            <div class="modal-eyebrow">Reach the Admissions Office</div>
             <div class="modal-icon-big">✉</div>
-            <div class="modal-label">Send us a note</div>
+            <h2 class="help-modal-title">Email us</h2>
             <a class="modal-value" :href="`mailto:${admission.email}`">
               {{ admission.email }}
             </a>
-            <div class="modal-hint">We reply within one business day</div>
+            <ol class="step-list">
+              <li class="step-item">
+                <span class="step-num">1</span>
+                <span class="step-body"><strong>Tap the address above</strong> to open your email app.</span>
+              </li>
+              <li class="step-item">
+                <span class="step-num">2</span>
+                <span class="step-body"><strong>Write a short note</strong> with your name, your grade, and your question.</span>
+              </li>
+              <li class="step-item">
+                <span class="step-num">3</span>
+                <span class="step-body"><strong>Send</strong> — we reply within one business day.</span>
+              </li>
+            </ol>
           </div>
         </div>
       </div>
     </transition>
 
     <!-- ============================================================== -->
-    <!-- HELP MODAL — shows details about Apply / Visit / Aid topics   -->
+    <!-- HELP MODAL — Apply / Visit / Aid (with steps)                   -->
     <!-- ============================================================== -->
     <transition name="modal">
       <div v-if="isHelpOpen" class="contact-modal" @click="closeHelp">
@@ -289,20 +304,62 @@ const admission = {
           <template v-for="w in admission.what" :key="w.key">
             <div v-if="activeHelp === w.key" class="modal-content">
               <div class="help-modal-icon">{{ w.icon }}</div>
-              <div class="modal-eyebrow">What the Admissions Office can help with</div>
+              <div class="modal-eyebrow">What we can help with</div>
               <h2 class="help-modal-title">{{ w.title }}</h2>
               <p class="help-modal-summary">{{ w.summary }}</p>
-              <ul class="help-bullets">
-                <li v-for="(b, bi) in w.bullets" :key="bi">
-                  <span class="bullet-mark">✓</span>
-                  <span class="bullet-text">{{ b }}</span>
+              <ol class="step-list">
+                <li v-for="(s, si) in w.steps" :key="si" class="step-item">
+                  <span class="step-num">{{ si + 1 }}</span>
+                  <div class="step-body">
+                    <strong>{{ s.title }}</strong>
+                    <span>{{ s.text }}</span>
+                  </div>
                 </li>
-              </ul>
+              </ol>
               <button class="help-modal-cta" type="button" @click="closeHelp">
                 Got it
               </button>
             </div>
           </template>
+        </div>
+      </div>
+    </transition>
+
+    <!-- ============================================================== -->
+    <!-- HOURS MODAL — full schedule with steps                          -->
+    <!-- ============================================================== -->
+    <transition name="modal">
+      <div v-if="hoursModalOpen" class="contact-modal" @click="closeHoursModal">
+        <div class="contact-modal-card help-modal-card" @click.stop>
+          <button class="modal-close" type="button" @click="closeHoursModal" aria-label="Close">
+            <span class="close-line close-line--1" />
+            <span class="close-line close-line--2" />
+          </button>
+
+          <div class="modal-content">
+            <div class="modal-eyebrow">Office Hours</div>
+            <div class="modal-icon-big">⏰</div>
+            <h2 class="help-modal-title">When we are open</h2>
+            <div class="hours-grid">
+              <div class="hours-line"><span class="hours-day-name">Monday &ndash; Thursday</span><span class="hours-time-text">8:00 AM &ndash; 5:00 PM</span></div>
+              <div class="hours-line"><span class="hours-day-name">Friday</span><span class="hours-time-text">8:00 AM &ndash; 4:00 PM</span></div>
+            </div>
+            <ol class="step-list">
+              <li class="step-item">
+                <span class="step-num">1</span>
+                <span class="step-body"><strong>Stop by</strong> Barton Hall, 2nd Floor, during the hours above.</span>
+              </li>
+              <li class="step-item">
+                <span class="step-num">2</span>
+                <span class="step-body"><strong>Check in</strong> at the front desk — no appointment needed for general questions.</span>
+              </li>
+              <li class="step-item">
+                <span class="step-num">3</span>
+                <span class="step-body"><strong>Meet a counselor</strong> — same-day visits are available most weekdays.</span>
+              </li>
+            </ol>
+            <p class="modal-hint-soft">Closed weekends and university holidays.</p>
+          </div>
         </div>
       </div>
     </transition>
@@ -926,7 +983,7 @@ const admission = {
 }
 
 /* ================================================================ */
-/*  CONTACT MODAL — large tap target showing phone or email         */
+/*  MODAL OVERLAY — navy/dourado, cantos arredondados, overlay escuro */
 /* ================================================================ */
 .contact-modal {
   position: fixed;
@@ -935,34 +992,56 @@ const admission = {
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   padding: 40px;
+  /* Overlay escuro semi-transparente (identidade NU navy) */
+  background: radial-gradient(circle at center,
+    rgba(0, 38, 61, 0.82) 0%,
+    rgba(0, 38, 61, 0.92) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .contact-modal-card {
   position: relative;
   display: flex; flex-direction: column;
   align-items: center;
-  max-width: 720px;
+  max-width: 760px;
   width: 100%;
-  background: var(--nu-wisp);
-  border-radius: 32px;
-  padding: 56px 48px 48px;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  /* Cartão cream com borda dourada */
+  background: linear-gradient(180deg, #fdfcf7 0%, var(--nu-wisp) 100%);
+  border-radius: 28px;
+  padding: 60px 56px 48px;
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(251, 217, 69, 0.4),
+    0 0 0 4px rgba(0, 38, 61, 0.4);
   cursor: default;
-  border: 1px solid var(--nu-cloud);
+  border: 2px solid var(--nu-tour);
+  /* Gold accent strip on top */
+  position: relative;
+  overflow: hidden;
 }
+.contact-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--nu-tour) 0%, var(--nu-amber) 50%, var(--nu-tour) 100%);
+}
+
 .modal-close {
   position: absolute;
   top: 20px; right: 20px;
   width: 56px; height: 56px;
   border-radius: 50%;
   background: var(--nu-powder);
-  border: none;
+  border: 2px solid var(--nu-cloud);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.3s, transform 0.3s var(--ease-out-soft);
+  transition: background 0.3s, transform 0.3s var(--ease-out-soft), border-color 0.3s;
   z-index: 2;
 }
 .modal-close:hover {
-  background: var(--nu-cloud);
+  background: var(--nu-tour);
+  border-color: var(--nu-tour);
   transform: scale(1.08) rotate(90deg);
 }
 .close-line {
@@ -979,51 +1058,50 @@ const admission = {
   align-items: center;
   text-align: center;
   gap: 14px;
+  width: 100%;
 }
 .modal-eyebrow {
-  font-size: 14px; font-weight: 700;
+  font-size: 13px; font-weight: 700;
   letter-spacing: 0.32em; text-transform: uppercase;
-  color: var(--nu-blue);
+  color: var(--nu-tour);
   margin-bottom: 6px;
 }
 .modal-icon-big {
-  font-size: 96px;
-  color: var(--nu-blue);
+  font-size: 88px;
+  color: var(--nu-tour);
   line-height: 1;
   margin-bottom: 6px;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
   animation: floatY 3s ease-in-out infinite;
-}
-.modal-label {
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--nu-navy);
-  opacity: 0.7;
 }
 .modal-value {
   font-family: var(--font-serif);
-  font-size: 56px; line-height: 1.1;
+  font-size: 48px; line-height: 1.1;
   color: var(--nu-midnight);
   text-decoration: none;
   letter-spacing: -0.01em;
   padding: 18px 32px;
   background: var(--nu-powder);
-  border-radius: 18px;
-  border: 2px solid var(--nu-blue);
-  transition: background 0.3s, transform 0.3s var(--ease-out-soft);
+  border-radius: 16px;
+  border: 2px solid var(--nu-tour);
+  transition: background 0.3s, transform 0.3s var(--ease-out-soft), color 0.3s;
   word-break: break-word;
   overflow-wrap: break-word;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(251, 217, 69, 0.2);
 }
 .modal-value:hover {
-  background: var(--nu-blue);
-  color: var(--nu-wisp);
+  background: var(--nu-tour);
+  color: var(--nu-midnight);
   transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(251, 217, 69, 0.45);
 }
-.modal-hint {
-  font-size: 14px; line-height: 1.5;
+.modal-hint-soft {
+  font-size: 13px;
   color: var(--nu-navy);
   opacity: 0.65;
-  margin-top: 6px;
+  margin: 8px 0 0;
+  letter-spacing: 0.02em;
 }
 
 /* === HELP MODAL — What to Expect details === */
@@ -1033,9 +1111,10 @@ const admission = {
 .help-modal-icon {
   font-family: var(--font-serif);
   font-size: 84px;
-  color: var(--nu-blue);
+  color: var(--nu-tour);
   line-height: 1;
   margin-bottom: 8px;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
   animation: floatY 3s ease-in-out infinite;
 }
 .help-modal-title {
@@ -1053,44 +1132,102 @@ const admission = {
   text-align: center;
   max-width: 56ch;
 }
-.help-bullets {
-  list-style: none; margin: 0 0 28px; padding: 0;
+
+/* === STEP LIST (numerado, navy + gold) === */
+.step-list {
+  list-style: none; counter-reset: step;
+  margin: 0 0 28px; padding: 0;
   display: flex; flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
-.help-bullets li {
-  display: flex; align-items: flex-start; gap: 14px;
-  padding: 14px 18px;
-  background: var(--nu-powder);
-  border-radius: 12px;
-  border-left: 3px solid var(--nu-blue);
-  font-size: 16px; line-height: 1.45;
+.step-item {
+  display: flex; align-items: flex-start; gap: 18px;
+  padding: 18px 22px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 38, 61, 0.08);
+  border-left: 4px solid var(--nu-tour);
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 38, 61, 0.06);
+  transition: transform 0.3s var(--ease-out-soft), box-shadow 0.3s, border-color 0.3s;
+}
+.step-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 20px rgba(0, 38, 61, 0.12);
+  border-color: var(--nu-amber);
+}
+.step-num {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nu-tour) 0%, var(--nu-amber) 100%);
+  color: var(--nu-midnight);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 22px; font-weight: 700;
+  box-shadow: 0 4px 10px rgba(251, 217, 69, 0.4);
+  margin-top: 2px;
+}
+.step-body {
+  display: flex; flex-direction: column;
+  gap: 4px;
+  font-size: 16px; line-height: 1.5;
   color: var(--nu-midnight);
   font-weight: 500;
 }
-.bullet-mark {
-  flex-shrink: 0;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  background: var(--nu-leaf);
-  color: var(--nu-wisp);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700;
-  margin-top: 1px;
+.step-body strong {
+  color: var(--nu-navy);
+  font-weight: 700;
+  font-size: 17px;
 }
-.bullet-text { flex: 1; }
+.step-body > span {
+  color: var(--nu-navy);
+  opacity: 0.85;
+}
+
+/* === HOURS GRID (modal Hours) === */
+.hours-grid {
+  display: flex; flex-direction: column;
+  gap: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 38, 61, 0.08);
+  padding: 8px 22px;
+  margin-bottom: 24px;
+}
+.hours-line {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--nu-cloud);
+  font-size: 16px;
+}
+.hours-line:last-child { border-bottom: none; }
+.hours-day-name {
+  font-weight: 700;
+  color: var(--nu-navy);
+  letter-spacing: 0.02em;
+  font-size: 16px;
+}
+.hours-time-text {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--nu-midnight);
+  font-variant-numeric: tabular-nums;
+}
+
 .help-modal-cta {
   margin-top: 8px;
   padding: 14px 36px;
-  background: var(--nu-blue);
+  background: linear-gradient(135deg, var(--nu-navy) 0%, var(--nu-blue) 100%);
   color: var(--nu-wisp);
   border: none;
   border-radius: 999px;
   font-size: 16px; font-weight: 700;
   letter-spacing: 0.04em;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 104, 187, 0.28);
+  box-shadow: 0 6px 18px rgba(0, 38, 61, 0.32);
   transition: transform 0.2s var(--ease-out-soft), box-shadow 0.2s, background 0.2s;
 }
 .help-modal-cta:hover {
@@ -1163,11 +1300,13 @@ const admission = {
   .info-grid { grid-template-columns: 1fr; gap: 20px; }
   .contact-modal { padding: 16px; }
   .contact-modal-card { padding: 48px 28px 36px; }
-  .modal-value { font-size: 32px; padding: 14px 18px; }
+  .modal-value { font-size: 28px; padding: 14px 18px; }
   .modal-icon-big { font-size: 72px; }
   .help-modal-title { font-size: 30px; }
   .help-modal-summary { font-size: 16px; }
   .help-modal-icon { font-size: 64px; }
-  .help-bullets li { font-size: 15px; }
+  .step-num { width: 32px; height: 32px; font-size: 18px; }
+  .step-body { font-size: 14px; }
+  .step-body strong { font-size: 15px; }
 }
 </style>
