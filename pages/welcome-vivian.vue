@@ -18,7 +18,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
  * welcome screen, not a world.
  *
  * Headline: "Welcome, Vivian"
- * Subheadline: "Photographer • Videographer • Storyteller • Creative Visionary"
+ * Subheadline: "Photographer • Videographer • Storyteller"
  * Quote: "Photography captures a moment. Videography brings it to life."
  * Footer: "We're excited to welcome Vivian to the Northwest University Marketing Team."
  */
@@ -131,8 +131,6 @@ onUnmounted(() => {
         <span class="role">Videographer</span>
         <span class="bullet" aria-hidden="true">•</span>
         <span class="role">Storyteller</span>
-        <span class="bullet" aria-hidden="true">•</span>
-        <span class="role">Creative Visionary</span>
       </p>
 
       <figure class="quote" :class="{ 'is-in': quoteVisible }">
