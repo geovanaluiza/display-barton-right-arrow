@@ -106,7 +106,7 @@ const upcomingGames = [
   justify-content: flex-end;
 }
 .hero-title {
-  font-family: var(--font-serif);
+  font-family: 'Redzone', Georgia, serif;
   font-size: 64px; line-height: 1.05;
   color: var(--nu-wisp);
   margin: 0;
@@ -114,6 +114,7 @@ const upcomingGames = [
 .hero-sub { font-size: 18px; line-height: 1.45; color: var(--nu-skylight); margin: 8px 0 0; }
 
 .sect { margin: 28px 0 12px; }
+.h2 { font-family: 'Redzone', Georgia, serif; }
 
 .teams {
   display: grid;
@@ -202,7 +203,7 @@ const upcomingGames = [
   color: var(--nu-blue);
   font-weight: 700;
 }
-.matchup-team.is-home { color: var(--nu-tour); }
+.matchup-team.is-home { color: var(--nu-blue); }
 .matchup-vs {
   font-size: 14px; font-style: italic;
   color: var(--nu-navy);
